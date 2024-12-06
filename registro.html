@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Autobús</title>
+</head>
+<body>
+    <h1>Registrar Autobús</h1>
+    <form action="registrar_autobus.php" method="post">
+        <label for="numero_autobus">Número de Autobús:</label>
+        <input type="text" id="numero_autobus" name="numero_autobus" required><br>
+
+        <label for="ruta">Ruta:</label>
+        <input type="text" id="ruta" name="ruta" required><br>
+
+        <label for="hora_salida">Hora de Salida:</label>
+        <input type="time" id="hora_salida" name="hora_salida" required><br>
+
+        <label for="hora_llegada">Hora de Llegada:</label>
+        <input type="time" id="hora_llegada" name="hora_llegada" required><br>
+
+        <label for="latitud">Latitud Inicial:</label>
+        <input type="number" step="any" id="latitud" name="latitud" required readonly><br>
+
+        <label for="longitud">Longitud Inicial:</label>
+        <input type="number" step="any" id="longitud" name="longitud" required readonly><br>
+
+        <button type="submit">Registrar Autobús</button>
+    </form>
+
+    <script>
+        // Verificar si el navegador soporta la geolocalización
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                // Obtener la latitud y longitud del dispositivo
+                document.getElementById('latitud').value = position.coords.latitude;
+                document.getElementById('longitud').value = position.coords.longitude;
+            }, function(error) {
+                alert("No se pudo obtener la ubicación. Asegúrate de que la geolocalización esté habilitada.");
+            });
+        } else {
+            alert("La geolocalización no es soportada en este navegador.");
+        }
+    </script>
+</body>
+</html>

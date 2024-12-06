@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Autobuses</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+    <script>
+        // Inicializar el mapa
+        let mapa, marcadores = {};
+
+        function cargarMapa() {
+            mapa = L.map('map').setView([2.4474, -76.6013], 14); // Coordenadas iniciales (Popayán)
+
+            // Cargar los tiles de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(mapa);
+
+            actualizarUbicaciones(); // Llamar para cargar datos iniciales
+            setInterval(actualizarUbicaciones, 5000); // Actualizar cada 5 segundos
+        }
+
+        // Función para obtener ubicaciones desde el servidor
+        async function actualizarUbicaciones() {
+            try {
+                const respuesta = await fetch('ubicaciones_autobuses.php'); // Archivo PHP que devuelve las ubicaciones
+                const datos = await respuesta.json();
+
+                // Actualizar o añadir marcadores
+                datos.forEach(autobus => {
+                    const { id, latitud, longitud, numero_autobus } = autobus;
+
+                    if (!marcadores[id]) {
+                        marcadores[id] = L.marker([latitud, longitud])
+                            .addTo(mapa)
+                            .bindPopup(`Autobús ${numero_autobus}`);
+                    } else {
+                        marcadores[id].setLatLng([latitud, longitud]); // Mover marcador existente
+                    }
+                });
+            } catch (error) {
+                console.error('Error al obtener datos del servidor:', error);
+            }
+        }
+    </script>
+</head>
+<body onload="cargarMapa()">
+    <h1>Mapa de Autobuses</h1>
+    <div id="map"></div>
+</body>
+</html>
